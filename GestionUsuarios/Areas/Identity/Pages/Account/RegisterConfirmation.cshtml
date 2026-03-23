@@ -1,0 +1,72 @@
+﻿@page
+@model RegisterConfirmationModel
+@{
+    ViewData["Title"] = "Register confirmation";
+}
+
+<style>
+    .container-full {
+        min-height: 100vh;
+    }
+
+    .card-custom {
+        max-width: 500px;
+    }
+
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+    }
+
+    .icon-size {
+        font-size: 2.5rem;
+    }
+
+    .alert-custom {
+        background-color: #f0f7ff;
+        color: #055160;
+        border-radius: 0.75rem;
+    }
+
+    .btn-custom {
+        border-radius: 0.75rem;
+        font-size: 1rem;
+    }
+</style>
+
+
+<div class="container d-flex justify-content-center align-items-center container-full">
+    <div class="card rounded-3 border-0 p-4 p-md-5 text-center card-custom">
+
+        <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center bg-light rounded-circle icon-circle">
+                <i class="bi bi-envelope-check text-primary icon-size"></i>
+            </div>
+        </div>
+
+        <h2 class="fw-bold text-dark mb-3">¡Casi terminamos!</h2>
+
+        <p class="text-secondary mb-4 px-lg-3">
+            Hemos enviado un enlace de activación a la dirección: <br />
+            <span class="fw-bold text-primary">@Model.Email</span>
+        </p>
+
+        <div class="alert alert-info border-0 small mb-4 alert-custom">
+            <i class="bi bi-info-circle me-2"></i>
+            Por favor, revisa tu bandeja de entrada (y la carpeta de spam) para confirmar tu cuenta y poder iniciar sesión.
+        </div>
+
+        <hr class="my-4 opacity-25">
+
+        <div class="d-grid gap-2">
+            <a href="https://mail.google.com" target="_blank" class="btn btn-primary btn-lg shadow-sm btn-custom">
+                Abrir mi correo
+            </a>
+            <a asp-page="./Login" class="btn btn-link text-decoration-none text-muted mt-2">
+                Volver al inicio
+            </a>
+        </div>
+    </div>
+</div>
+
+

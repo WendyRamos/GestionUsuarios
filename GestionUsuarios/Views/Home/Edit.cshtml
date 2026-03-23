@@ -1,0 +1,38 @@
+﻿@{
+    ViewData["Title"] = "Privacy Policy";
+}
+@model Employee
+
+<h2>Editar Perfil</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="mb-3">
+        <label>Nombre</label>
+        <input asp-for="Name" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Apellido Paterno</label>
+        <input asp-for="PaternalSurname" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Apellido Materno</label>
+        <input asp-for="MaternalSurname" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Teléfono</label>
+        <input asp-for="Phone" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Email secundario</label>
+        <input asp-for="SecondaryEmail" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

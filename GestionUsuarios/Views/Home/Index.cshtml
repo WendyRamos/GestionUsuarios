@@ -1,0 +1,155 @@
+﻿@model Employee
+@{
+    ViewData["Title"] = "Home Page";
+}
+<style>
+    .nav-tabs .nav-link.active {
+        border-bottom: 2px solid #0d6efd;
+        font-weight: 600;
+    }
+
+    .card {
+        border-radius: 10px;
+    }
+</style>
+<div class="container-fluid p-4">
+    <div class="mb-4">
+        <small class="text-muted">Perfil de usuario</small>
+        <h2 class="fw-bold">Perfil de usuario</h2>
+    </div>
+
+    <div class="card border-0 shadow-sm p-4 mb-4">
+
+        <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-primary bg-opacity-25 d-flex justify-content-center align-items-center"
+                 style="width:70px; height:70px;">
+                <i class="bi bi-person fs-2 text-primary"></i>
+            </div>
+
+            <div>
+                <h5 class="mb-1 fw-bold">
+                    @User.FindFirst("FullName")?.Value
+                    <span class="badge bg-success ms-2">Activo</span>
+                </h5>
+                <div class="text-muted small">Administrador de Recursos</div>
+                <div class="text-muted small">011 Ministerio de Salud</div>
+            </div>
+        </div>
+
+        <ul class="nav nav-tabs mt-4">
+            <li class="nav-item">
+                <button class="nav-link active">Información básica</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link">Responsabilidades</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link">Historial</button>
+            </li>
+        </ul>
+
+        <div class="mt-4">
+            <form asp-action="Edit" method="post" class="row g-4">
+                <div class="col-md-4">
+                    <label class="form-label">Nombres</label>
+                    <input asp-for="Name" class="form-control editable" disabled />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Primer Apellido</label>
+                    <input asp-for="PaternalSurname" class="form-control editable" disabled />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Segundo Apellido</label>
+                    <input asp-for="MaternalSurname" class="form-control editable" disabled />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Tipo de Documento de Identidad</label>
+                    <input asp-for="TypeDocument" class="form-control" disabled />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">DNI</label>
+                    <input asp-for="Document" class="form-control" disabled />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Fecha de nacimiento</label>
+                    <input asp-for="Birthdate" type="date" class="form-control editable" disabled />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Nacionalidad</label>
+                    <input asp-for="Nationality" class="form-control" disabled />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Sexo</label>
+                    <input asp-for="Sex" class="form-control" disabled />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Correo Principal</label>
+                    <input value="@Model.User?.Email" class="form-control " disabled />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Correo Secundario (opcional)</label>
+                    <input asp-for="SecondaryEmail" class="form-control editable" disabled />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Telefono Movil</label>
+                    <input asp-for="Phone" class="form-control editable" disabled />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Telefono Secundario (opcional)</label>
+                    <input asp-for="ScondaryPhone" class="form-control editable" disabled />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Tipo de contratación</label>
+                    <input asp-for="TypeContract" class="form-control editable" disabled />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Fecha de contratación</label>
+                    <input asp-for="HiringDate" type="date"  class="form-control editable" disabled />
+                </div>
+
+                <div class="mt-4">
+                    <button type="button" id="editBtn" class="btn btn-primary">Editar</button>
+
+                    <button type="submit" id="saveBtn" class="btn btn-success d-none">
+                        Guardar
+                    </button>
+
+                    <button type="button" id="cancelBtn" class="btn btn-secondary d-none">
+                        Cancelar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const editBtn = document.getElementById("editBtn");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+
+    const inputs = document.querySelectorAll(".editable");
+
+    editBtn.addEventListener("click", () => {
+        inputs.forEach(input => input.disabled = false);
+
+        editBtn.classList.add("d-none");
+        saveBtn.classList.remove("d-none");
+        cancelBtn.classList.remove("d-none");
+    });
+
+    cancelBtn.addEventListener("click", () => {
+        location.reload();
+    });
+</script>

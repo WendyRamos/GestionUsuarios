@@ -1,0 +1,271 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+
+<style>
+    .glass-card {
+        background: #FFF;
+        border-radius: 5px;
+    }
+
+    .form-label {
+        color: #94a3b8;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        background-color: #fff;
+        border: 1px solid #334155;
+        border-radius: 3px;
+        padding: 8px 16px;
+        transition: all 0.2s ease;
+    }
+        .form-control::placeholder {
+            color: #94a3b8;
+            opacity: 0.5;
+            font-weight: 400;
+        }
+
+        .form-control:focus {
+            background-color: #fff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+    .btn-login {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        border-radius: 3px;
+        padding: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+        transition: all 0.3s transform;
+    }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.4);
+        }
+
+    .btn-check + .btn-outline-primary {
+        color: #94a3b8;
+        border-color: #334155;
+        background: transparent;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .btn-check:checked + .btn-outline-primary {
+        background-color: #3b82f6;
+        border-color: #3b82f6;
+        color: #FFF;
+        box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+    }
+
+    .input-group-password .btn-outline-secondary:hover {
+        background-color: #3b82f6;
+        color: #FFF !important
+    }
+</style>
+
+<div class="row g-0 justify-content-center align-items-center min-vh-100">
+    <div class="col-11 col-sm-9 col-md-6 col-lg-3">
+        <div class="glass-card p-md-5">
+            <div class="text-center">
+                <div class=" d-inline-block ">
+                    <i class="bi bi-person-badge text-primary fs-2"></i>
+                </div>
+                <h2 class="fw-bold h3">Iniciar Sesión</h2>
+            </div>
+            <form id="account" method="post">
+                <div asp-validation-summary="ModelOnly" class="d-none"></div>
+                <div class="mb-3">
+                    <div class="mb-3 text-center">
+                        <div class="btn-group w-100" role="group" aria-label="Tipo de Documento">
+                            <input type="radio" class="btn-check" name="docType" id="btnDni" checked>
+                            <label class="btn btn-outline-primary btn-sm border-secondary-subtle" for="btnDni">DNI</label>
+
+                            <input type="radio" class="btn-check" name="docType" id="btnCe">
+                            <label class="btn btn-outline-primary btn-sm border-secondary-subtle" for="btnCe">CE</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Input.User" class="form-label text-uppercase fw-semibold" id="labelDoc">DNI</label>
+                        <input asp-for="Input.User" id="docInput" class="form-control" type="text" maxlength="8"
+                               placeholder="Ingresa 8 números" />
+                        <span asp-validation-for="Input.User" class="text-danger xsmall"></span>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label asp-for="Input.Password" class="form-label text-uppercase fw-semibold">Contraseña</label>
+                    <div class="input-group input-group-password">
+                        <input asp-for="Input.Password" id="passwordInput" class="form-control" type="password" placeholder="" />
+                        <button class="btn btn-outline-secondary border-secondary border-start-0 text-muted px-3"
+                                type="button" id="togglePassword" title="Mostrar/Ocultar contraseña">
+                            <i class="bi bi-eye" id="eyeIcon"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Input.Password" class="text-danger xsmall"></span>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check m-0">
+                        <input class="form-check-input" asp-for="Input.RememberMe" />
+                        <label class="form-check-label text-muted small" asp-for="Input.RememberMe">Recordar usuario</label>
+                    </div>
+                    <a asp-page="./ForgotPassword" class="text-primary small text-decoration-none fw-medium">¿Olvidaste tu clave?</a>
+                </div>
+                <button type="submit" class="btn btn-login w-100 mb-4">Ingresar</button>
+
+                <p class="text-center text-muted small mb-0">
+                    ¿Nuevo aquí? <a asp-page="./Register" class="text-primary fw-bold text-decoration-none">Crea tu cuenta</a>
+                </p>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="errorToast" class="toast align-items-center text-white bg-danger border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex p-2">
+            <div class="toast-body">
+                <i class="bi bi-x-circle-fill me-2"></i> <span id="toastMsg"></span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="lockoutModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-danger border-opacity-50  rounded-1">
+            <div class="modal-body p-5 text-center">
+                <div class="mb-4">
+                    <i class="bi bi-shield-lock-fill text-danger display-1 opacity-75"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-3">Cuenta bloqueda temporalmente</h5>
+                <p class="text-secondary mb-4">
+                    Has excedido el número máximo de intentos fallidos (<strong>@(ViewData["MaxAttempts"] ?? "5")</strong>). Por su seguridad,
+                    su cuenta ha sido bloqueada durante 15 minutos. Intenta nuevamente mas tarde.
+                </p>
+                <button type="button" class="btn btn-danger w-100 py-2 rounded-3 text-white" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        $(document).ready(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const toastElement = document.getElementById('errorToast');
+        const $toastMsg = $("#toastMsg");
+
+        if (urlParams.get('message') === 'expired') {
+            $toastMsg.html('<i class="bi bi-clock-history me-2"></i> Su sesión ha expirado por inactividad. Inicie sesión de nuevo.');
+
+            toastElement.classList.remove('bg-danger');
+            toastElement.classList.add('bg-warning', 'text-dark');
+
+            var toast = new bootstrap.Toast(toastElement, { delay: 5000 });
+            toast.show();
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        else {
+            var errorText = $(".validation-summary-errors ul li").first().text().trim();
+
+            if (errorText !== "" && errorText !== "null") {
+                $toastMsg.text(errorText);
+
+                toastElement.classList.remove('bg-warning', 'text-dark');
+                toastElement.classList.add('bg-danger', 'text-white');
+
+                var toast = new bootstrap.Toast(toastElement);
+                toast.show();
+                if (window.history.replaceState) {
+                    window.history.replaceState(null, null, window.location.href);
+                }
+            }
+        }
+
+            var show = '@(ViewData["ShowLockoutModal"]?.ToString().ToLower() ?? "false")';
+
+            if (show === "true") {
+                setTimeout(function() {
+                    var el = document.getElementById('lockoutModal');
+                    if (el) {
+                        var myModal = new bootstrap.Modal(el);
+                        myModal.show();
+                    }
+                }, 100);
+            }
+
+            const docInput = document.getElementById('docInput');
+            const labelDoc = document.getElementById('labelDoc');
+
+            $('input[name="docType"]').change(function() {
+                $(docInput).removeClass("is-invalid").removeClass("input-validation-error");
+                $(docInput).closest('.mb-3').find(".text-danger").text("");
+
+                const form = $(docInput).closest('form');
+                form.validate().resetForm();
+
+                if (this.id === 'btnDni') {
+                    // Reglas para DNI
+                    docInput.maxLength = 8;
+                    docInput.placeholder = "8 números";
+                    labelDoc.innerText = "DNI";
+                    docInput.value = "";
+
+                    $(docInput).off('input').on('input', function() {
+                        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);
+                    });
+                } else {
+                    // Reglas para CE
+                    docInput.maxLength = 9;
+                    docInput.placeholder = "9 caracteres";
+                    labelDoc.innerText = "Carné de Extranjería";
+                    docInput.value = "";
+
+                    $(docInput).off('input').on('input', function() {
+                        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 9);
+                    });
+                }
+            });
+
+            $(docInput).on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);
+            });
+
+            //Configuracion del icono para la visualización de la contraseña
+                const passwordInput = document.getElementById('passwordInput');
+        const togglePasswordButton = document.getElementById('togglePassword');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        // Lógica para mostrar/ocultar contraseña al hacer clic en el ojito
+        togglePasswordButton.addEventListener('click', function () {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+
+            passwordInput.setAttribute('type', type);
+
+            this.classList.toggle('active');
+
+            if (type === 'password') {
+                eyeIcon.classList.remove('bi-eye-slash');
+                eyeIcon.classList.add('bi-eye');
+            } else {
+                eyeIcon.classList.remove('bi-eye');
+                eyeIcon.classList.add('bi-eye-slash');
+            }
+        });
+        });
+    </script>
+}

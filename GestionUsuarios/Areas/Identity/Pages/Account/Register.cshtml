@@ -1,0 +1,270 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Crear Cuenta";
+}
+
+<style>
+    .glass-card {
+        background: #FFF;
+        border-radius: 5px;
+    }
+
+    .form-label {
+        color: #94a3b8;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+    }
+
+    .form-control, .form-select {
+        background-color: #FFF;
+        border: 1px solid #334155;
+        border-radius: 3px;
+        padding: 8px 16px;
+    }
+
+    .form-group-input {
+        background-color: #FFF;
+        border: 1px solid #334155;
+        border-radius: 3px;
+    }
+
+    .form-control::placeholder {
+        color: #94a3b8;
+        opacity: 0.5;
+        font-weight: 400;
+    }
+
+    .form-control:focus {
+        background-color: #FFF;
+        border-color: #10b981;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    }
+
+    .btn-register {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        border-radius: 3px;
+        padding: 8px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.4);
+            color: white;
+        }
+</style>
+
+    <div class="row justify-content-center align-items-center min-vh-100 py-5">
+        <div class="col-11 col-sm-10 col-md-8 col-lg-6">
+
+            <div class="glass-card p-md-5">
+                <div class="text-center">
+                    <div class="d-inline-block">
+                        <i class="bi bi-person-plus-fill text-success fs-2"></i>
+                    </div>
+                    <h2 class="fw-bold">Registrate aqui!</h2>
+                </div>
+
+                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <div asp-validation-summary="ModelOnly" class="d-none"></div>
+
+                    <div class="row">
+                        <div class="col-md-5 mb-3">
+                            <label class="form-label">Tipo Doc.</label>
+                        <select id="docTypeSelect" name="docTypeSelect" class="form-select shadow-none  border-secondary shadow-none">
+                                <option value="DNI" selected>DNI</option>
+                                <option value="CE">C. Extranjería</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-7 mb-3">
+                            <label asp-for="Input.User" class="form-label" id="labelDoc">Número de DNI</label>
+                            <div class="input-group">
+                                <span class="input-group-text form-group-input border-secondary  border-end-0 bg-transparent shadow-none">
+                                    <i class="bi bi-card-text"></i>
+                                </span>
+                                <input asp-for="Input.User" id="docInput" class="form-control  border-start-0 ps-0"
+                                       type="text" maxlength="8" placeholder="8 números"
+                                       autocomplete="off" />
+                            </div>
+                            <span asp-validation-for="Input.User" class="text-danger xsmall"></span>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label asp-for="Input.FullName" class="form-label">Nombres y Apellidos</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-transparent border-secondary border-end-0 text-muted">
+                                    <i class="bi bi-person"></i>
+                                </span>
+                                <input asp-for="Input.FullName" id="fullNameInput" class="form-control border-secondary border-start-0 ps-0 shadow-none"
+                                       placeholder="Escribe tus nombres completos" required />
+                            </div>
+                            <span asp-validation-for="Input.FullName" class="text-danger xsmall"></span>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <label asp-for="Input.Email" class="form-label">Correo Electrónico</label>
+                            <input asp-for="Input.Email" class="form-control" placeholder="ejemplo@correo.com" />
+                            <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Input.Sex" class="form-label">Sexo</label>
+                            <select asp-for="Input.Sex" class="form-select border-secondary shadow-none">
+                                <option value="" selected disabled>Seleccione</option>
+                                <option value="M">Masculino</option>
+                                <option value="F">Femenino</option>
+                            </select>
+                            <span asp-validation-for="Input.Sex" class="text-danger xsmall"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Input.Nationality" class="form-label">Nacionalidad</label>
+                            <select asp-for="Input.Nationality" id="nacionalidadSelect" class="form-select border-secondary shadow-none">
+                                <option value="PER" selected>Peruana</option>
+                                <option value="EXT">Nationality</option>
+                            </select>
+                        </div>
+
+                    <div class="col-md-6 form-group mb-3">
+                        <label asp-for="Input.Password"></label>
+                        <div class="input-group">
+                            <input asp-for="Input.Password" id="passInput" class="form-control" />
+                            <button class="btn btn-outline-secondary" type="button" id="btnPass">
+                                <i class="bi bi-eye" id="iconPass"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6 form-group mb-3">
+                        <label asp-for="Input.ConfirmPassword"></label>
+                        <div class="input-group">
+                            <input asp-for="Input.ConfirmPassword" id="confirmPassInput" class="form-control" />
+                            <button class="btn btn-outline-secondary" type="button" id="btnConfirmPass">
+                                <i class="bi bi-eye" id="iconConfirmPass"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    </div>
+
+                    <button id="registerSubmit" type="submit" class="btn btn-register w-100 mb-4 shadow-sm">
+                        CREAR MI CUENTA
+                    </button>
+
+                    <div class="text-center">
+                        <p class="small text-muted mb-0">
+                            ¿Ya tienes una cuenta? <a asp-page="./Login" class="text-success fw-bold text-decoration-none">Inicia Sesión</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="regToast" class="toast align-items-center text-white bg-danger border-0 shadow-lg" role="alert">
+        <div class="d-flex p-2">
+            <div class="toast-body">
+                <i class="bi bi-exclamation-octagon-fill me-2"></i> <span id="regToastMsg"></span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="welcomeModal" tabindex="-1" aria-labelledby="welcomeModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-body text-center p-5">
+                <div class="mb-4">
+                    <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h2 class="fw-bold">¡Bienvenido, @ViewData["NewUserName"]!</h2>
+                <p class="text-muted">Tu cuenta ha sido creada exitosamente. Ya puedes acceder al sistema.</p>
+                <div class="mt-4">
+                    <a asp-page="./Login" class="btn btn-success btn-lg px-5 shadow-sm">
+                        Iniciar Sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            // 1. Logica toast
+            var errorMessages = $(".validation-summary-errors ul li").map(function() {
+                return $(this).text();
+            }).get();
+
+            if (errorMessages.length > 0) {
+                $("#regToastMsg").text(errorMessages[0]); 
+                var toastElement = document.getElementById('regToast'); 
+                var toast = new bootstrap.Toast(toastElement);
+                toast.show();
+            }
+
+            // 2. Logica DNI / CE
+            const docSelect = document.getElementById('docTypeSelect');
+            const docInput = document.getElementById('docInput');
+            const labelDoc = document.getElementById('labelDoc');
+            const nacSelect = document.getElementById('nacionalidadSelect');
+            const nameInput = document.getElementById('fullNameInput');
+
+            function aplicarConfiguracion() {
+                    if (docSelect.value === 'DNI') {
+            docInput.maxLength = 8;
+            docInput.placeholder = "8 números";
+            labelDoc.innerText = "Número de DNI";
+            nacSelect.value = "PER";
+            $(docInput).off('input').on('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        } else {
+            docInput.maxLength = 9;
+            docInput.placeholder = "9 caracteres";
+            labelDoc.innerText = "Número de C.E.";
+            nacSelect.value = "EXT";
+            $(docInput).off('input').on('input', function() {
+                this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            });
+        }
+            }
+
+            $(docSelect).on('change', aplicarConfiguracion);
+            aplicarConfiguracion();
+
+            function setupToggle(buttonId, inputId, iconId) {
+            const btn = document.getElementById(buttonId);
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+
+            btn.addEventListener('click', function () {
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+
+                icon.classList.toggle('bi-eye');
+                icon.classList.toggle('bi-eye-slash');
+            });
+        }
+
+        setupToggle('btnPass', 'passInput', 'iconPass');
+        setupToggle('btnConfirmPass', 'confirmPassInput', 'iconConfirmPass');
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+            var showModal = '@TempData["ShowWelcomeModal"]';
+            if (showModal === 'True') {
+                var myModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
+                myModal.show();
+            }
+        });
+    </script>
+}

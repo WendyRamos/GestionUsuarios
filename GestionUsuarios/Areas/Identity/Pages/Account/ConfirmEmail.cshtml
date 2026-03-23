@@ -1,0 +1,90 @@
+﻿@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "¡Cuenta activada!";
+}
+
+<style>
+    .container-full {
+        min-height: 100vh;
+    }
+
+    .card-custom {
+        max-width: 480px;
+        border-radius: 5px;
+        background-color: #ffffff;
+    }
+
+    .icon-circle-success {
+        width: 130px;
+        height: 130px;
+        background-color: #e9f7ef;
+        border: 2px solid #198754;
+    }
+
+    .icon-success {
+        font-size: 4.5rem;
+        color: #198754;
+    }
+
+    .title-custom {
+        font-size: 2.25rem;
+        color: #1a1f36;
+        letter-spacing: -0.5px;
+    }
+
+    .text-custom {
+        font-size: 1.15rem;
+        line-height: 1.6;
+    }
+
+    .btn-custom {
+        background-color: #0056b3 !important;
+        border-color: #0056b3 !important;
+        border-radius: 0.75rem;
+        padding: 1rem 0;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .footer-box {
+        background-color: #f8f9fa;
+    }
+</style>
+
+
+<div class="container d-flex justify-content-center align-items-center container-full bg-light bg-opacity-10">
+
+    <div class="card p-5 text-center border-0 card-custom">
+
+        <div class="mb-5 d-flex justify-content-center">
+            <div class="rounded-circle d-flex align-items-center justify-content-center icon-circle-success">
+                <i class="bi bi-envelope-check icon-success"></i>
+            </div>
+        </div>
+
+        <h1 class="fw-bold mb-4 title-custom">
+            ¡Bienvenida, @(Model.Name ?? ViewData["UserName"]?.ToString() ?? "Invitada")!
+        </h1>
+
+        <div class="mb-1 px-3">
+            <p class="text-secondary mb-2 text-custom">
+                Su cuenta en el aplicativo X está activada.
+            </p>
+            <p class="text-secondary text-custom">
+                Ya puede iniciar sesión.
+            </p>
+        </div>
+
+        <div class="d-grid mt-2 pt-3">
+            <a asp-page="./Login" class="btn btn-primary btn-lg shadow btn-custom">
+                <i class="bi bi-box-arrow-in-right me-2"></i>
+                Iniciar sesión ahora
+            </a>
+        </div>
+
+        <div class="mt-4 p-3 rounded-3 small text-muted footer-box">
+            Su registro ha sido completado con éxito.
+        </div>
+    </div>
+</div>

@@ -1,0 +1,219 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IConfiguration Configuration
+@{
+    var timeoutMinutes = Configuration.GetValue<int>("SessionConfig:TimeoutMinutes", 20);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - GestionUsuarios</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/GestionUsuarios.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div class="d-flex min-vh-100 overflow-hidden">
+            <nav id="sidebar" class="bg-light border-end">
+                <div class="sidebar-header p-3 text-center">
+                    <i class="bi bi-list fs-3 cursor-pointer" id="menu-toggle"></i>
+                </div>
+                <div class="list-group list-group-flush mt-4">
+                    <a href="#" class="list-group-item list-group-item-action bg-transparent text-center border-0 py-3">
+                        <i class="bi bi-house fs-4"></i>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action bg-transparent text-center border-0 py-3">
+                        <i class="bi bi-buildings fs-4"></i>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action bg-transparent text-center border-0 py-3 active-link">
+                        <i class="bi bi-file-earmark-plus fs-4"></i>
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action bg-transparent text-center border-0 py-3">
+                        <i class="bi bi-search fs-4"></i>
+                    </a>
+                </div>
+            </nav>
+
+            <div id="page-content-wrapper" class="flex-grow-1">
+                <header class="navbar navbar-expand-lg navbar-dark shadow-sm py-2" style="background-color: #9d1414;">
+                    <div class="container-fluid justify-content-end">
+                        <div class="d-flex align-items-center text-white">
+                            <i class="bi bi-question-circle me-3 fs-5"></i>
+                            <div class="position-relative me-3">
+                                <i class="bi bi-bell fs-5"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary" style="font-size: 0.6rem;">9+</span>
+                            </div>
+                            <div class="d-flex align-items-center border-start ps-3">
+                                <div class="text-end me-2 lh-1">
+                                    <small class="fw-bold d-block">@User.FindFirst("FullName")?.Value</small>
+                                    <small class="opacity-75" style="font-size: 0.7rem;">Operador</small>
+                                </div>
+                                <i class="bi bi-person-circle fs-3"></i>
+                            </div>
+                            <form class="d-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/Identity/Account/Login" method="post">
+                                <button type="submit" class="list-group-item list-group-item-action bg-transparent text-center border-0 py-3 text-danger mx-3">
+                                    <i class="bi bi-box-arrow-right fs-4"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </header>
+                <main role="main" class="">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    }
+    else
+    {
+        <main role="main">
+            @RenderBody()
+        </main>
+    }
+    <div class="modal fade" id="sessionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 text-center shadow border-0" style="border-radius: 8px">
+                <div class="mb-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center m-auto" style="width: 80px; height: 80px; background-color: #fff1f1; border: 2px solid #E89F9F;">
+                        <i class="bi bi-clock-history" style="font-size: 2.5rem; color: #E89F9F;"></i>
+                    </div>
+                </div>
+                <h4 class="fw-bold text-dark">Su sesión esta a punto de expirar</h4>
+                <p class="text-secondary">Por su seguridad su sesión expirará en <span id="secondsTimer" class="fw-bold text-danger">--</span> segundos. Para continuar haga click en "Extender Sesión".</p>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-primary btn-lg" id="extendSessionBtn" style="background-color: #0056b3 !important; border-radius: 3px;">
+                        Extender sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <form id="logoutForm" class="d-none" asp-area="Identity" asp-page="/Account/Logout"
+              asp-route-returnUrl="/Identity/Account/Login?message=expired" method="post">
+            @Html.AntiForgeryToken() <button type="submit"></button>
+        </form>
+    }
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        let warningTimer;
+        let countdownInterval;
+        let sessionModalInstance;
+        let logoutTimer;
+
+        const minutesSession = @timeoutMinutes;
+        const secondsGrace = 60;
+        const logoutTime = minutesSession * 60 * 1000;
+        const warningTime = logoutTime - (secondsGrace * 1000);
+
+        function getModal() {
+            const modalEl = document.getElementById('sessionModal');
+            if (!modalEl) return null;
+            if (!sessionModalInstance) {
+                sessionModalInstance = new bootstrap.Modal(modalEl);
+            }
+            return sessionModalInstance;
+        }
+
+        function startTimers() {
+            clearTimeout(warningTimer);
+            clearTimeout(logoutTimer);
+            clearInterval(countdownInterval);
+
+            const timerDisplay = document.getElementById('secondsTimer');
+            if (timerDisplay) {
+                timerDisplay.style.fontSize = "1rem";
+                timerDisplay.classList.remove('animate-pulse', 'text-danger');
+                timerDisplay.innerText = "--";
+            }
+
+            warningTimer = setTimeout(() => {
+                const modal = getModal();
+                if (modal) {
+                    modal.show();
+                    startCountdown();
+                }
+            }, warningTime);
+
+               logoutTimer = setTimeout(async () => {
+            const tokenEl = document.querySelector('input[name="__RequestVerificationToken"]');
+
+            if (tokenEl) {
+                await fetch('@Url.Page("/Account/Logout", new { area = "Identity" })', {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': tokenEl.value
+                    }
+                });
+            }
+
+            window.location.replace('@Url.Page("/Account/Login", new { area = "Identity", message = "expired" })');
+
+        }, warningTime + (secondsGrace * 1000));
+        }
+
+        function startCountdown() {
+            let timeLeft = secondsGrace;
+            const timerDisplay = document.getElementById('secondsTimer');
+
+            if (timerDisplay) timerDisplay.innerText = timeLeft;
+
+            countdownInterval = setInterval(() => {
+                timeLeft--;
+
+                if (timerDisplay) {
+                    timerDisplay.innerText = timeLeft;
+
+                    if (timeLeft <= 10) {
+                        timerDisplay.style.fontSize = "1.5rem";
+                        timerDisplay.classList.add('text-danger');
+                    }
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    // ❌ YA NO haces logout aquí
+                }
+
+            }, 1000);
+        }
+
+        const extendBtn = document.getElementById('extendSessionBtn');
+        if (extendBtn) {
+            extendBtn.addEventListener('click', async function() {
+                try {
+                    const response = await fetch('/Home/RefreshSession');
+                    if (response.ok) {
+                        const modal = getModal();
+                        if (modal) modal.hide();
+                        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                        document.body.classList.remove('modal-open');
+                        document.body.style = "";
+                        startTimers();
+                    } else {
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    window.location.reload();
+                }
+            });
+        }
+
+        if ("@SignInManager.IsSignedIn(User)".toLowerCase() === "true") {
+            startTimers();
+        }
+    </script>
+</body>
+</html>
